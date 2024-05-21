@@ -1,0 +1,147 @@
+.piece {
+  position: absolute;
+  width: calc(100% / 8);
+  aspect-ratio: 1;
+  background-size: contain;
+  pointer-events: none;
+}
+.square-1 {
+  transform: translate(100%,0%);
+}
+.square-2 {
+  transform: translate(300%, 0%);
+}
+.square-3 {
+  transform: translate(500%, 0%);
+}
+.square-4 {
+  transform: translate(700%, 0%);
+}
+.square-5 {
+  transform: translate(0%, 100%);
+}
+.square-6 {
+  transform: translate(200%, 100%);
+}
+.square-7 {
+  transform: translate(400%, 100%);
+}
+.square-8 {
+  transform: translate(600%, 100%);
+}
+.square-9 {
+  transform: translate(100%,200%);
+}
+.square-10 {
+  transform: translate(300%, 200%);
+}
+.square-11 {
+  transform: translate(500%, 200%);
+}
+.square-12 {
+  transform: translate(700%, 200%);
+}
+.square-13 {
+  transform: translate(0%, 300%);
+}
+.square-14 {
+  transform: translate(200%, 300%);
+}
+.square-15 {
+  transform: translate(400%, 300%);
+}
+.square-16 {
+  transform: translate(600%, 300%);
+}
+.square-17 {
+  transform: translate(100%,400%);
+}
+.square-18 {
+  transform: translate(300%,400%);
+}
+.square-19 {
+  transform: translate(500%, 400%);
+}
+.square-20 {
+  transform: translate(700%, 400%);
+}
+.square-21 {
+  transform: translate(0%, 500%);
+}
+.square-22 {
+  transform: translate(200%, 500%);
+}
+.square-23 {
+  transform: translate(400%, 500%);
+}
+.square-24 {
+  transform: translate(600%, 500%);
+}
+.square-25 {
+  transform: translate(100%,600%);
+}
+.square-26 {
+  transform: translate(300%, 600%);
+}
+.square-27 {
+  transform: translate(500%, 600%);
+}
+.square-28 {
+  transform: translate(700%, 600%);
+}
+.square-29 {
+  transform: translate(0%, 700%);
+}
+.square-30 {
+  transform: translate(200%, 700%);
+}
+.square-31 {
+  transform: translate(400%, 700%);
+}
+.square-32 {
+  transform: translate(600%, 700%);
+}
+
+.black-king, .black-man, .white-king, .white-man {
+  transition: all .2s ease;
+  z-index: 5;
+}
+
+.black-man {
+  background-image: url("../img/board/black_man.svg");
+}
+.black-king {
+  background-image: url("../img/board/black_king.svg");
+
+}
+.white-man {
+  background-image: url("../img/board/white_man.svg");
+}
+.white-king {
+  background-image: url("../img/board/white_king.svg");
+}
+.capture-hint, .hint::after {
+  border-radius: 50%;
+}
+.capture-hint {
+  border: 10px solid rgba(0,0,0,0.15);
+
+}
+.hint {
+  //background-color: aliceblue;
+  position: absolute;
+}
+.hint::after {
+  position: absolute;
+  content: "";
+  top: 30%;
+  left: 30%;
+  width: 40%;
+  height: 40%;
+  background: rgba(0,0,0,0.15);
+}
+
+.highlight {
+  background-color: rgba(209, 165, 45,.60);
+  pointer-events: none;
+}

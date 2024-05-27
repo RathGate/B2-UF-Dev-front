@@ -2,7 +2,6 @@
   position: absolute;
   width: calc(100% / 8);
   aspect-ratio: 1;
-  background-size: contain;
   pointer-events: none;
 }
 .square-1 {
@@ -107,17 +106,32 @@
   z-index: 5;
 }
 
-.black-man {
+.inverted {
+  .black-man::after, .black-king::after, .white-man::after, .white-king::after {
+    transform: rotate(180deg);
+  }
+}
+.black-man::after, .black-king::after, .white-man::after, .white-king::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: "";
+  height: 100%;
+  width: 100%;
+  background-size: contain;
+}
+
+.black-man::after {
   background-image: url("../img/board/black_man.svg");
 }
-.black-king {
+.black-king::after {
   background-image: url("../img/board/black_king.svg");
 
 }
-.white-man {
+.white-man::after {
   background-image: url("../img/board/white_man.svg");
 }
-.white-king {
+.white-king:after {
   background-image: url("../img/board/white_king.svg");
 }
 .capture-hint, .hint::after {

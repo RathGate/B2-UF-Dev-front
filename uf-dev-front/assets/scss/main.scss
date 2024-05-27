@@ -5,10 +5,17 @@
   box-sizing: border-box;
 }
 
+
+$color-light: #ececec;
+$color-dark: #131313;
+
+
 body, html, #__nuxt {
   height: 100vh;
   width: 100%;
   margin: 0;
+  background-color: $color-light;
+  font-family: "Nanum Gothic", sans-serif;
 }
 
 main{

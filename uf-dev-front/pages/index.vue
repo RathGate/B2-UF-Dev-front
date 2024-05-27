@@ -5,7 +5,6 @@ const route = useRoute()
 <template>
   <Navbar></Navbar>
   <main>
-    <Board></Board>
   </main>
 </template>
 

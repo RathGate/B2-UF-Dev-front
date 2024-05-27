@@ -1,1 +1,4 @@
-# B2-UF-Infra-Client
+# B2-UF-Dev-Front
+
+npm -i
+npm run dev

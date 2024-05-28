@@ -1,37 +1,202 @@
 <template>
   <Navbar></Navbar>
   <main>
-    <div v-if="isGamePlaying" class="game-ctn">
-      <div class="board-ctn">
-        <div ref="board_div" id="board" :class="game_data.player_color === 'Black' ? 'inverted' : ''" v-html="board_html" style="" @click="boardClickHandler">
+    <div v-if="isGamePlaying" class="game-ctn"  :class="game_data.player_color === 'Black' ? 'inverted' : ''" >
+      <div class="board-ctn shadow">
+        <template v-if="game_data.player_color === 'Black'">
+          <div class="numbers-vt">
+            <div class="number">29</div><div class="number"></div>
+            <div class="number">21</div><div class="number"></div>
+            <div class="number">13</div><div class="number"></div>
+            <div class="number">5</div><div class="number"></div>
+          </div>
+          <div class="numbers-ht">
+            <div class="number">4</div><div class="number"></div>
+            <div class="number">3</div><div class="number"></div>
+            <div class="number">2</div><div class="number"></div>
+            <div class="number">1</div><div class="number"></div>
+          </div>
+        </template>
+        <template v-else>
+          <div class="numbers-vt">
+            <div class="number">4</div><div class="number"></div>
+            <div class="number">12</div><div class="number"></div>
+            <div class="number">20</div><div class="number"></div>
+            <div class="number">28</div><div class="number"></div>
+          </div>
+          <div class="numbers-ht">
+            <div class="number">29</div><div class="number"></div>
+            <div class="number">30</div><div class="number"></div>
+            <div class="number">31</div><div class="number"></div>
+            <div class="number">32</div><div class="number"></div>
+          </div>
+        </template>
+
+        <div ref="board_div" id="board" v-html="board_html" style="" @click="boardClickHandler">
         </div>
       </div>
-      <div class="history">
-        <div class="history-title">HISTORY</div>
-        <div class="history-ctn">
-          <template v-for="(item, i) in history">
-            <div v-if="i % 2 === 0" class="history-cell">{{ Math.floor(i / 2) + 1}}</div>
-            <div class="history-cell">{{item}}</div>
-          </template>
+      <div class="info-ctn">
+
+        <div class="player-ctn">
+          <div class="pfp shadow"><img src="~/assets/img/placeholder_pfp.png" alt=""></div>
+          <div class="player">
+            <div class="username">Anonymous</div>
+            <div class="color-ctn"><span>Playing </span>
+              <span class="color" v-if="game_data.player_color == 'Black'">White <img height="25" src="~/assets/img/board/white_king.svg"></span>
+              <span class="color" v-if="game_data.player_color == 'White'">Black <img height="25" src="~/assets/img/board/black_king.svg"></span>
+            </div>
+          </div>
+        </div>
+        <div class="to-move"><span class="color">{{game_data.current_turn}}</span> to move !</div>
+        <div class="game-info-ctn">
+
+          <div class="history">
+
+            <div class="history-ctn">
+              <div class="history-cell">1.</div>
+              <template v-for="(item, i) in history">
+
+                <div v-if="i % 2 === 0 && i !== 0" class="history-cell">{{ Math.floor(i / 2) + 1}}.</div>
+                <div class="history-cell move">{{item}}</div>
+              </template>
+            </div>
+          </div>
+        </div>
+
+        <div class="player-ctn">
+          <div class="pfp shadow"><img src="~/assets/img/placeholder_pfp.png" alt=""></div>
+          <div class="player">
+            <div class="username-ctn" ><span class="username">Anonymous</span><span class="is-you"> (you)</span></div>
+            <div class="color-ctn"><span>Playing </span>
+              <span class="color" v-if="game_data.player_color == 'Black'">Black <img height="25" src="~/assets/img/board/black_king.svg"></span>
+              <span class="color" v-if="game_data.player_color == 'White'">White <img height="25" src="~/assets/img/board/white_king.svg"></span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
     <div v-else>
-      WAITING FOR AN OPPONENT....
+      <WaitingList></WaitingList>
     </div>
   </main>
 </template>
 
-<style>
+<style lang="scss">
+.to-move {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  align-items: center;
+  padding: 15px;
+  border: 2px solid #131313;
+  border-width: 2px 0;
+  margin: 30px 0 0 ;
+}
+.info-ctn {
+  display: flex;
+  flex-direction: column;
+  .game-info-ctn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+    scrollbar-gutter: stable both-edges;
+    margin: 30px 0;
+  }
+  
+  .player-ctn {
+    height: 75px;
+    display: flex;
+    gap: 10px;
+    .pfp {
+      aspect-ratio: 1;
+      border-radius: 10px;
+      overflow: hidden;
+      img {
+        height: 100%;
+        width: 100%;
+      }
+
+    }
+    .player {
+      padding: 5px 0;
+      .username {
+        font-weight: bold;
+      }
+      .is-you {
+        opacity: .7;
+        font-size: 14px;
+        font-style: italic;
+      }
+      .color-ctn {
+        font-size: 12px;
+        display: flex;
+        gap: 5px;
+        * {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+        }
+
+      }
+    }
+  }
+
+  .color {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: bold;
+  }
+}
+
+
+.board-ctn {
+  $number-width: 20px;
+  position: relative;
+  height: fit-content;
+  margin-right: $number-width;
+  .numbers-ht, .numbers-vt {
+    position: absolute;
+    display: grid;
+  }
+  .numbers-vt {
+    grid-template-rows: repeat(8, 1fr);
+    width: $number-width;
+    height: 100%;
+    top: 0px;
+    right: -$number-width;
+  }
+  .numbers-ht{
+    grid-template-columns: repeat(8, 1fr);
+    height: $number-width;
+    width: 100%;
+    bottom: -$number-width;
+    left: 0;
+  }
+  .number {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 12px;
+  }
+}
+
+
 .game-ctn {
   display: flex;
   gap: 20px;
-  flex-wrap: wrap;
+  flex-grow: 0;
+  max-height: 820px;
 }
 .history {
   max-width: 500px;
   width: 500px;
-
+  min-height: 300px;
   &-title {
     width: 100%;
     height: 40px;
@@ -41,12 +206,16 @@
     border: 1px solid black;
   }
   &-ctn {
+    //max-width: 500px;
     display: grid;
     grid-template-columns: 20% 1fr 1fr;
   }
   &-cell {
-    height: 40px;
-    border: 1px solid red;
+    font-size: 14px;
+    padding: 5px 0;
+  }
+  &-cell.move {
+    font-weight: bold;
   }
 }
 #board {
@@ -59,16 +228,27 @@
 .game-ctn, .board-ctn, #board {
   max-width: 100%;
 }
-.inverted {
+.inverted #board{
   transform: rotate(180deg);
 }
 </style>
 
 <script setup>
+import {onBeforeRouteLeave} from "vue-router";
+
 const WS_IP = "192.168.1.69"
 const WS_PORT = "6969"
 let socket = ref();
 const board_div = ref(null)
+
+// same as beforeRouteLeave option but with no access to `this`
+onBeforeRouteLeave((to, from) => {
+  const answer = window.confirm(
+    "Do you really want to leave? If you're playing and the game is not finished, you'll be disqualified."
+  )
+  // cancel the navigation and stay on the same page
+  if (!answer) return false
+})
 
 onMounted(() =>{
   board = document.getElementById("board");
@@ -110,12 +290,13 @@ onMounted(() =>{
 
 
 const history = computed(() =>{
-  return history_arr.value;
+  return game_data.value.history;
 })
 
 let game_data = ref(new GameData());
 
 import {onMounted} from "vue";
+import WaitingList from "~/components/WaitingList.vue";
 
 let isGamePlaying = ref(false)
 let isFrozen = false;
@@ -123,7 +304,6 @@ let isFrozen = false;
 let board_html = ref("");
 let saved_board_html;
 let board;
-let history_arr = ref([])
 
 let selected_index = -1;
 let legal_moves = {};

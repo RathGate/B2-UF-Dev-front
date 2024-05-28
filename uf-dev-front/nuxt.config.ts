@@ -5,7 +5,8 @@ export default defineNuxtConfig({
   modules: ["@nuxtjs/google-fonts"],
   googleFonts: {
     families: {
-      "Nanum Gothic": true
+      "Nanum Gothic": true,
+      "Teachers": true
     }
   }
 })

@@ -53,7 +53,10 @@ export function drawBoard(state, addToHTML=false) {
     let temp = "";
 
     const { white, black } = state_re.exec(state).groups;
-    let color_pos = {"white": white.split(","), "black": black.split(",")};
+    let color_pos = {};
+    color_pos["white"] = white ? white.split(",") : [];
+    color_pos["black"] = black ? black.split(",") : [];
+
 
     for (const [color, positions] of Object.entries(color_pos)) {
         positions.forEach(position => {

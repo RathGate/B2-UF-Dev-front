@@ -30,6 +30,19 @@
   -webkit-text-stroke: 3px #131313;
   text-stroke: 3px #131313;
   font-weight: lighter;
+  position: relative;
+  &::after {
+    position: absolute;
+    content: "✨";
+    top: -10px;
+    left: -170px;
+  }
+  &::before {
+    position: absolute;
+    content: "✨";
+    top: -10px;
+    right: -170px;
+  }
 }
 
 </style>

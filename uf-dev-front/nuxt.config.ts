@@ -8,5 +8,10 @@ export default defineNuxtConfig({
       "Nanum Gothic": true,
       "Teachers": true
     }
+  },
+  runtimeConfig: {
+    public: {
+      API_ENDPOINT: "http://192.168.1.69:8000/api"
+    }
   }
 })

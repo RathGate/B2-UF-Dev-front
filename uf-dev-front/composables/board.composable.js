@@ -29,24 +29,16 @@ export function getIndexFromClick(e) {
 }
 
 export function addHints(origin, moves, board) {
-    if (!board || !moves) { console.log("wtd"); return;}
+    if (!board || !moves) { return;}
     board.innerHTML += `<div class="piece square-${origin} highlight"></div>`
-    console.log("1")
-
     moves.forEach(move => {
-        console.log("2")
-
         if (isValidIndex(move)) {
             board.innerHTML += `<div class="piece square-${move} hint"></div>`
-            console.log("3")
-
         }
     })
-    console.log("4")
-
 }
 
-export function drawBoard(state, addToHTML=false) {
+export function drawBoard(state, addToHTML=false, last_move=null) {
     if (!state || !state_re.test(state)) {
         return null;
     }
@@ -68,6 +60,13 @@ export function drawBoard(state, addToHTML=false) {
             temp += `<div class="piece square-${nb} ${color}-${type}"></div>`
         })
     }
+    if (last_move) {
+        for (const p of last_move) {
+            temp += `<div class="piece square-${p} last"></div>`
+        }
+    }
+
+
     if (addToHTML) {
         let board = document.getElementById("board");
         board.innerHTML = temp;

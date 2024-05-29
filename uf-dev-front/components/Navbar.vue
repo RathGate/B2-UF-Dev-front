@@ -8,7 +8,11 @@
           <a><div class="nav-link">review</div></a>
         </div>
       </div>
-      <div class="nav-right"></div>
+      <div class="nav-right">
+        <template v-if="user">
+          {{ user.username }}
+        </template>
+      </div>
     </nav>
   </div>
 </template>
@@ -68,5 +72,26 @@ nav {
   }
 }
 </style>
-<script setup lang="ts">
+<script setup>
+import { onMounted, nextTick, ref } from "vue";
+import { useRouter } from "vue-router"
+
+const token = useCookie('token');
+const runtimeConfig = useRuntimeConfig();
+const user = ref();
+const router = useRouter();
+
+onMounted(() => {
+  nextTick(async () => {
+    if(token.value) {
+      const userRes = await getCurrentUser(runtimeConfig.public.API_ENDPOINT, token.value)
+      if (userRes.data && !userRes.error) {
+        user.value = userRes.data.value
+        console.log(user.value)
+      }
+    }
+  })
+})
+
+
 </script>

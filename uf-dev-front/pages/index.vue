@@ -1,5 +1,5 @@
-<script setup lang="ts">
-const route = useRoute()
+<script setup>
+
 </script>
 
 <template>

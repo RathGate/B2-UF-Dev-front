@@ -47,7 +47,13 @@
             </div>
           </div>
         </div>
-        <div class="to-move"><span class="color">{{game_data.current_turn}}</span> to move !</div>
+        <div v-if="!game_data.isGameOver" class="to-move"><span class="color">{{ game_data.current_turn }}</span> to move !</div>
+        <div v-else class="to-move result">
+          <div v-if="game_data.result.score === 'Tie'" class="result-title"><span class="color">✨ TIE ✨</span></div>
+          <div v-else class="result-title"><span class="color">✨ {{ game_data.result.score }} WINS ✨</span></div>
+          <div v-if="game_data.result.score_comment" class="result-comment">{{ game_data.result.score_comment }}</div>
+        </div>
+
         <div class="game-info-ctn">
 
           <div class="history">
@@ -82,6 +88,15 @@
 </template>
 
 <style lang="scss">
+.result {
+  display: flex;
+  flex-direction: column;
+  &-comment {
+    font-size: 14px;
+    position: relative;
+    font-style: italic;
+  }
+}
 .to-move {
   width: 100%;
   display: flex;
@@ -96,6 +111,7 @@
 .info-ctn {
   display: flex;
   flex-direction: column;
+
   .game-info-ctn {
     flex: 1;
     display: flex;
@@ -234,6 +250,9 @@
 </style>
 
 <script setup>
+definePageMeta({
+  middleware: 'auth'
+})
 import {onBeforeRouteLeave} from "vue-router";
 
 const WS_IP = "192.168.1.69"
@@ -250,7 +269,7 @@ onBeforeRouteLeave((to, from) => {
   if (!answer) return false
 })
 
-onMounted(() =>{
+onMounted(async () =>{
   board = document.getElementById("board");
   socket.value = new WebSocket(`ws://${WS_IP}:${WS_PORT}`)
   // Event linked to the reception of a websocket message
@@ -261,14 +280,13 @@ onMounted(() =>{
     try {
       message = JSON.parse(data.replaceAll(/\\/g, ``))
     } catch (Exception) {
-      console.log(data)
     }
     if (message["game"]) {
       if (!isGamePlaying.value && message["game"]) {
         isGamePlaying.value = true
       }
         game_data.value.parse_game_data(message)
-        board_html.value = drawBoard(game_data.value.board, false)
+        board_html.value = drawBoard(game_data.value.board, false, game_data.value.last_move)
         saved_board_html = board_html.value;
     }
   });

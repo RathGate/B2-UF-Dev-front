@@ -1,5 +1,4 @@
 <template>
-  <Navbar></Navbar>
   <main>
     <div v-if="isGamePlaying" class="game-ctn"  :class="game_data.player_color === 'Black' ? 'inverted' : ''" >
       <div class="board-ctn shadow">
@@ -40,7 +39,7 @@
         <div class="player-ctn">
           <div class="pfp shadow"><img src="~/assets/img/placeholder_pfp.png" alt=""></div>
           <div class="player">
-            <div class="username">Anonymous</div>
+            <div class="username">{{ game_data.opponent_username }}</div>
             <div class="color-ctn"><span>Playing </span>
               <span class="color" v-if="game_data.player_color == 'Black'">White <img height="25" src="~/assets/img/board/white_king.svg"></span>
               <span class="color" v-if="game_data.player_color == 'White'">Black <img height="25" src="~/assets/img/board/black_king.svg"></span>
@@ -52,6 +51,11 @@
           <div v-if="game_data.result.score === 'Tie'" class="result-title"><span class="color">✨ TIE ✨</span></div>
           <div v-else class="result-title"><span class="color">✨ {{ game_data.result.score }} WINS ✨</span></div>
           <div v-if="game_data.result.score_comment" class="result-comment">{{ game_data.result.score_comment }}</div>
+          <div class="btns">
+            <div class="download-btn" @click="savePDN(game_data)">Download PDN</div>
+            <div class="restart-btn" @click="refresh()">Restart a game</div>
+          </div>
+
         </div>
 
         <div class="game-info-ctn">
@@ -72,7 +76,7 @@
         <div class="player-ctn">
           <div class="pfp shadow"><img src="~/assets/img/placeholder_pfp.png" alt=""></div>
           <div class="player">
-            <div class="username-ctn" ><span class="username">Anonymous</span><span class="is-you"> (you)</span></div>
+            <div class="username-ctn" ><span class="username">{{ user.username }}</span><span class="is-you"> (you)</span></div>
             <div class="color-ctn"><span>Playing </span>
               <span class="color" v-if="game_data.player_color == 'Black'">Black <img height="25" src="~/assets/img/board/black_king.svg"></span>
               <span class="color" v-if="game_data.player_color == 'White'">White <img height="25" src="~/assets/img/board/white_king.svg"></span>
@@ -88,6 +92,34 @@
 </template>
 
 <style lang="scss">
+.btns {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+.download-btn {
+  padding: 5px 10px;
+  color: black;
+  border-radius: 7px;
+  border: 2px solid black;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.restart-btn {
+  border: 1px solid red;
+  padding: 5px 10px;
+  color: black;
+  background: #9cffae;
+  border-radius: 7px;
+  border: 2px solid black;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
 .result {
   display: flex;
   flex-direction: column;
@@ -254,14 +286,26 @@ definePageMeta({
   middleware: 'auth'
 })
 import {onBeforeRouteLeave} from "vue-router";
+import {nextTick, onMounted} from "vue";
+import WaitingList from "~/components/WaitingList.vue";
 
-const WS_IP = "192.168.1.69"
+const WS_IP = "localhost"
 const WS_PORT = "6969"
 let socket = ref();
+const user = ref();
+const token = useCookie("token");
+const runtimeConfig = useRuntimeConfig();
 const board_div = ref(null)
+
+function refresh() {
+  window.location.reload()
+}
 
 // same as beforeRouteLeave option but with no access to `this`
 onBeforeRouteLeave((to, from) => {
+  if (!game_data || !game_data.value.result ) {
+    return false;
+  }
   const answer = window.confirm(
     "Do you really want to leave? If you're playing and the game is not finished, you'll be disqualified."
   )
@@ -271,6 +315,17 @@ onBeforeRouteLeave((to, from) => {
 
 onMounted(async () =>{
   board = document.getElementById("board");
+
+  nextTick(async () => {
+    if(token.value) {
+      const userRes = await getCurrentUser(runtimeConfig.public.API_ENDPOINT, token.value)
+      if (userRes.data && !userRes.error) {
+        user.value = userRes.data.value
+        console.log(user.value)
+      }
+    }
+  })
+
   socket.value = new WebSocket(`ws://${WS_IP}:${WS_PORT}`)
   // Event linked to the reception of a websocket message
   socket.value.addEventListener('message', function(event) {
@@ -313,8 +368,7 @@ const history = computed(() =>{
 
 let game_data = ref(new GameData());
 
-import {onMounted} from "vue";
-import WaitingList from "~/components/WaitingList.vue";
+
 
 let isGamePlaying = ref(false)
 let isFrozen = false;
@@ -352,10 +406,31 @@ function squareClickHandler(index) {
   }
 
   if (game_data.value.legal_moves[selected_index] && game_data.value.legal_moves[selected_index].includes(index)) {
-    socket.value.send(`${selected_index} ${index}`)
+    let message = {}
+    message["id"] = user.value.id;
+    message["username"] = user.value.username;
+    message["move"] = `${selected_index} ${index}`;
+    socket.value.send(JSON.stringify(message))
   }
   selected_index = -1;
   board_div.value.innerHTML = saved_board_html
+}
+
+function savePDN(game_data, filename="pdn.txt") {
+  game_data = game_data.toPDN()
+  let textFileAsBlob = new Blob([game_data], { type: 'text/plain' });
+  let downloadLink = document.createElement('a');
+  downloadLink.download = filename;
+  downloadLink.innerHTML = 'Download File';
+
+  if (window.webkitURL != null) {
+    downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+  } else {
+    downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+    downloadLink.style.display = 'none';
+    document.body.appendChild(downloadLink);
+  }
+  downloadLink.click();
 }
 </script>
 

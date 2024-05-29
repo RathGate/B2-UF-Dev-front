@@ -11,7 +11,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      API_ENDPOINT: "http://192.168.1.69:8000/api"
+      API_ENDPOINT: "http://localhost:8000/api"
     }
   }
 })

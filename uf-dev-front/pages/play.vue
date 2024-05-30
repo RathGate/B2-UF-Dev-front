@@ -288,9 +288,6 @@ definePageMeta({
 import {onBeforeRouteLeave} from "vue-router";
 import {nextTick, onMounted} from "vue";
 import WaitingList from "~/components/WaitingList.vue";
-
-const WS_IP = "localhost"
-const WS_PORT = "6969"
 let socket = ref();
 const user = ref();
 const token = useCookie("token");
@@ -326,7 +323,7 @@ onMounted(async () =>{
     }
   })
 
-  socket.value = new WebSocket(`ws://${WS_IP}:${WS_PORT}`)
+  socket.value = new WebSocket(`ws://${runtimeConfig.public.WS_IP}:${runtimeConfig.public.WS_PORT}`)
   // Event linked to the reception of a websocket message
   socket.value.addEventListener('message', function(event) {
     const data = event.data;
@@ -348,8 +345,11 @@ onMounted(async () =>{
 
 // Event linked to the opening of a websocket connection
   socket.value.addEventListener('open', function(event) {
-    // Todo ?
-    console.log('WebSocket connection opened.');
+    console.log("WebSocket connected")
+    let message = {}
+    message["id"] = user.value.id;
+    message["username"] = user.value.username;
+    socket.value.send(JSON.stringify(message))
   });
 
 // Event linked to the closing of a websocket connection

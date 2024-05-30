@@ -9,9 +9,16 @@
         </div>
       </div>
       <div class="nav-right">
-        <template v-if="user">
-          {{ user.username }}
-        </template>
+        <div class="nav-links">
+          <template v-if="user">
+            <NuxtLink :to="{ name: 'user-id', params: { id: user.username }}"><div class="nav-link">{{ user.username }}</div></NuxtLink>
+            <Icon @click="logoutUser" class="logout nav-link" name="material-symbols:logout-rounded" />
+          </template>
+          <template v-else>
+            <NuxtLink to="/login"><div class="nav-link">login</div></NuxtLink>
+            <NuxtLink to="/Register"><div class="nav-link">register</div></NuxtLink>
+          </template>
+        </div>
       </div>
     </nav>
   </div>
@@ -31,6 +38,7 @@
 .nav-links {
   display: flex;
   gap: 20px;
+  align-items: center;
 }
 nav {
   a {
@@ -48,9 +56,22 @@ nav {
     align-items: center;
     gap: 50px;
     .nav-link {
+      cursor: pointer;
       letter-spacing: 1px;
       font-size: 20px;
       opacity: .9;
+      transition: all ease 0.5s;
+      &::after {
+        content: '';
+        width: 0;
+        height: 2px;
+        background: #131313;
+        transition: all .6s ease;
+        display: block;
+      }
+      &:hover::after {
+        width: 100%;
+      }
     }
   }
 }
@@ -71,6 +92,15 @@ nav {
     opacity: .1;
   }
 }
+
+.logout {
+  cursor: pointer;
+  transition: color ease 0.4s;
+  color: #c91a1a;
+  &:hover {
+    color: #ba0b31;
+  }
+}
 </style>
 <script setup>
 import { onMounted, nextTick, ref } from "vue";
@@ -81,13 +111,19 @@ const runtimeConfig = useRuntimeConfig();
 const user = ref();
 const router = useRouter();
 
+const logoutUser = () => {
+  token.value = null;
+  user.value = null;
+  window.location.reload();
+}
+
 onMounted(() => {
   nextTick(async () => {
     if(token.value) {
       const userRes = await getCurrentUser(runtimeConfig.public.API_ENDPOINT, token.value)
       if (userRes.data && !userRes.error) {
         user.value = userRes.data.value
-        console.log(user.value)
+        console.log("connected user", user.value)
       }
     }
   })

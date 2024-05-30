@@ -1,4 +1,4 @@
-import {getCurrentUser} from "~/composables/user.composable";
+import {getCurrentUser} from "~/composables/api_user.composable.js";
 
 export default defineNuxtRouteMiddleware(async (to, from) =>  {
     const token = useCookie("token");

@@ -39,10 +39,34 @@ export const registerUser = async (endpoint, userCrendentials) => {
     return { data }
 }
 
-export const getUserById = async (endpoint, token, id) => {
+export const getUserById = async (endpoint, id) => {
     const { data, pending, error, refresh } = await useAsyncData(
-        'user',
+        'userById',
         () => $fetch(`${endpoint}/users/${id}/`, {
+            method: 'GET'
+        })
+    )
+
+    if(error.value) return { error }
+    return { data }
+}
+
+export const getUserByUsername = async (endpoint, id) => {
+    const { data, pending, error, refresh } = await useAsyncData(
+        'userByUsername',
+        () => $fetch(`${endpoint}/users/username/${id}/`, {
+            method: 'GET'
+        })
+    )
+
+    if(error.value) return { error }
+    return { data }
+}
+
+export const getAllUsers = async (endpoint, token) => {
+    const { data, pending, error, refresh } = await useAsyncData(
+        'users',
+        () => $fetch(`${endpoint}/users/all`, {
             method: 'GET',
             headers: {
                 authorization: `Bearer ${token}`
@@ -53,6 +77,7 @@ export const getUserById = async (endpoint, token, id) => {
     if(error.value) return { error }
     return { data }
 }
+
 export const updateUser = async (endpoint, token, id, user) => {
     const { data, pending, error, refresh } = await useAsyncData(
         'user',

@@ -12,7 +12,7 @@ export class GameData {
         this.legal_moves = parse_legal_moves(legal_moves);
         this.last_move = last_move ? last_move : [];
         this.result = result ? parseResult(result) : {};
-        this.isGameOver = !!this.result;
+        this.isGameOver = !this.result;
         this.opponent_username = opponent_username;
     }
     parse_game_data(game_data) {
@@ -27,9 +27,9 @@ export class GameData {
         this.legal_moves = parse_legal_moves(game_data["game"]["legal_moves"])
         this.last_move = game_data["game"]["last_move"] ? JSON.parse(JSON.stringify(game_data["game"]["last_move"])) : [];
         this.result = game_data["game"]["result"] ? parseResult(game_data["game"]["result"]) : {};
-        this.isGameOver = !!this.result;
+        this.isGameOver = game_data["game"]["is_game_over"]
+        console.log(this.result)
         console.log(this)
-        console.log(this.toPDN("pouet"))
     }
     toPDN(player_name) {
         if (!this.fen || !this.history_str) {
@@ -53,6 +53,18 @@ export class GameData {
         r += s ? `* ${s}` : "";
         return r;
     }
+}
+
+export const toPDN = (fen, history, game_result) => {
+    let r = ``;
+    let s = score[game_result];
+    r += `[GameType "21"]\n`;
+    r += `[Result "${s}"]\n`;
+    r += `[FEN "${fen}"]\n`;
+    r += `\n`;
+    r += history.replace(/^\s+|\s+$/g, '');
+    r += s ? `* ${s}` : "";
+    return r;
 }
 
 function parseResult(result) {

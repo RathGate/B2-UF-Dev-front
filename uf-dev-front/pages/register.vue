@@ -24,6 +24,10 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
+definePageMeta({
+  layout: false,
+});
+
 const token = useCookie(
   'token',
   {
